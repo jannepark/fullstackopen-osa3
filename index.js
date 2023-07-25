@@ -1,6 +1,7 @@
 const express = require('express')
-const app = express()
+const morgan = require('morgan')
 
+const app = express()
 
 let persons = [
     { id:1, name: 'Arto Hellas', number: '040-123456' },
@@ -9,6 +10,11 @@ let persons = [
     { id:4,name: 'Mary Poppendieck', number: '39-23-6423122' }
 ]
 app.use(express.json())
+
+morgan.token('body', (req, res) => JSON.stringify(req.body))
+const customMorganFormat = ':method :url :status :res[content-length] - :response-time ms :body'
+app.use(morgan(customMorganFormat))
+
 app.get('/', (req, res) => {
     res.send('<h1>Hello World!</h1>')
 })
@@ -45,6 +51,7 @@ const generateId = () => {
   }
   
 app.post('/api/persons', (request, response) => {
+    console.log(request.body)
     const body = request.body
     const reqPersonName = persons.find(person => person.name === body.name)
     if (!body.name) {
