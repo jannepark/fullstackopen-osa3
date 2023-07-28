@@ -7,16 +7,18 @@ const Person = require('./models/person')
 
 
 let persons = [
-    { id: 1, name: 'Arto Hellas', number: '040-123456' },
-    { id: 2, name: 'Ada Lovelace', number: '39-44-5323523' },
-    { id: 3, name: 'Dan Abramov', number: '12-43-234345' },
-    { id: 4, name: 'Mary Poppendieck', number: '39-23-6423122' }
+    // { id: 1, name: 'Arto Hellas', number: '040-123456' },
+    // { id: 2, name: 'Ada Lovelace', number: '39-44-5323523' },
+    // { id: 3, name: 'Dan Abramov', number: '12-43-234345' },
+    // { id: 4, name: 'Mary Poppendieck', number: '39-23-6423122' }
 ]
 const errorHandler = (error, request, response, next) => {
     console.error(error.message)
 
     if (error.name === 'CastError') {
         return response.status(400).send({ error: 'malformatted id' })
+    } else if (error.name === 'ValidationError') {
+        return response.status(400).json({ error: error.message})
     }
     next(error)
 }
@@ -82,13 +84,16 @@ app.delete('/api/persons/:id', (request, response, next) => {
 // }
 
 app.post('/api/persons', (request, response, next) => {
-    console.log(request.body)
+    console.log(request.body.name.length)
     const body = request.body
-    const person = new Person({
+    let person = new Person({
         name: body.name,
-        number: body.number,
+        number: body.number
     })
-    const reqPersonName = persons.find(person => person.name === body.name)
+
+
+    const reqPersonName = persons.find(person => 
+        person.name === body.name)
 
     if (!body.name) {
         return response.status(400).json({
@@ -105,22 +110,25 @@ app.post('/api/persons', (request, response, next) => {
             error: 'Name already added'
         })
     }
-
-    person.save().then(savedNote => {
-        response.json(savedNote)
+    person.save().then(savedPerson => {
+        response.json(savedPerson)
         })
         .catch(error => next(error))
 
+
 })
 app.put('/api/persons/:id', (request, response, next) => {
-    const body = request.body
+    const {name, number} = request.body
 
-    const person = {
-        name: body.name,
-        number: body.number,
-    }
+    // const person = {
+    //     name: body.name,
+    //     number: body.number,
+    // }
 
-    Person.findByIdAndUpdate(request.params.id, person, { new: true })
+    Person.findByIdAndUpdate(
+        request.params.id,
+        {name, number},
+        { new: true, runValidators: true, context: 'query'})
         .then(updatedPerson => {
             response.json(updatedPerson)
         })
