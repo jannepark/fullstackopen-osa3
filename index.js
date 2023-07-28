@@ -50,7 +50,8 @@ app.get('/api/info', (req, res) => {
     console.log('request time sent , ', time)
 })
 app.get('/api/persons/:id', (request, response, next) => {
-    const id = Number(request.params.id)
+    // const id = Number(request.params.id)
+    console.log("tööt")
     Person.findById(request.params.id)
         .then(person => {
             if (person) {
