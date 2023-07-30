@@ -21,25 +21,25 @@ const personSchema = new mongoose.Schema({
 const Person = mongoose.model('Persons', personSchema)
 
 if(process.argv[3]){
-    const name = process.argv[3]
-    const number = process.argv[4]
-    const person = new Person({
-        name: name,
-        number: number,
-    })
+  const name = process.argv[3]
+  const number = process.argv[4]
+  const person = new Person({
+    name: name,
+    number: number,
+  })
 
-    person.save().then(result => {
-        console.log(`Added ${name}`)
-        mongoose.connection.close()
-    })
+  person.save().then(() => {
+    console.log(`Added ${name}`)
+    mongoose.connection.close()
+  })
 }
 else {
-    console.log("Phonebook:")
-    Person.find({}).then(result => {
-        result.forEach(note => {
-          console.log(note.name,note.number)
-        })
-        mongoose.connection.close()
-      })
+  console.log('Phonebook:')
+  Person.find({}).then(result => {
+    result.forEach(note => {
+      console.log(note.name,note.number)
+    })
+    mongoose.connection.close()
+  })
 }
 
