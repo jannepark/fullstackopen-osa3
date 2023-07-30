@@ -84,14 +84,11 @@ app.delete('/api/persons/:id', (request, response, next) => {
 // }
 
 app.post('/api/persons', (request, response, next) => {
-  console.log(request.body.name.length)
   const body = request.body
   let person = new Person({
     name: body.name,
     number: body.number
   })
-
-
   const reqPersonName = persons.find(person =>
     person.name === body.name)
 
